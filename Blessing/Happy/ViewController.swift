@@ -7,12 +7,52 @@
 //
 
 import UIKit
+import Blessing
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+
+
+        Blessing.shared.query("apple.com") { result in
+            switch result {
+            case .success(let record):
+                print(record)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+        
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        Blessing.shared.query("apple.com") { result in
+            switch result {
+            case .success(let record):
+                print(record)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+
+        Blessing.shared.query("apple.com") { result in
+            switch result {
+            case .success(let record):
+                print(record)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+
     }
 
     override func didReceiveMemoryWarning() {
