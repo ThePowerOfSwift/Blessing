@@ -14,7 +14,14 @@ struct BlessingError: Error, CustomStringConvertible {
     let description: String
 
     static var `default`: BlessingError {
-        return BlessingError(code: -1, description: "Unkown")
+        return BlessingError(code: -1, description: "Unkown error")
+    }
+}
+
+extension BlessingError: CustomDebugStringConvertible {
+
+    var debugDescription: String {
+        return NSLocalizedString(description, comment: "")
     }
 }
 

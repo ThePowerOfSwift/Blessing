@@ -44,6 +44,26 @@ class BlessingTests: XCTestCase {
 
     func testAsyncQuery() {
 
+        let exp = expectation(description: "test async")
+        Blessing.shared.query("www.aliyun.com", on: .aliyun(account: "139450")) { result in
+            switch result {
+            case .success(let record):
+                XCTAssertNotNil(record)
+                exp.fulfill()
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+
+        waitForExpectations(timeout: 30.0, handler: nil)
+
     }
-    
+
+    func testAliyun() {
+
+        let res = Blessing.shared.query("www.aliyun.com", on: .aliyun(account: "139450"))
+
+        XCTAssertNotNil(res.value, res.error!.localizedDescription)
+    }
+
 }
