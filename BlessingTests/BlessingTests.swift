@@ -10,7 +10,9 @@ import XCTest
 @testable import Blessing
 
 class BlessingTests: XCTestCase {
-    
+
+    var host = "apple.com"
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -31,6 +33,17 @@ class BlessingTests: XCTestCase {
         self.measure {
             // Put the code you want to measure the time of here.
         }
+    }
+
+    func testSyncQuery() {
+
+        let res = Blessing.shared.query(host, on: .dnspod)
+
+        XCTAssertNotNil(res.value)
+    }
+
+    func testAsyncQuery() {
+
     }
     
 }
