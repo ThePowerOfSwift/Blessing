@@ -34,11 +34,12 @@ extension Request {
 }
 
 protocol RequestSender {
-    func send<T: Request>(_ req: T, queue: DispatchQueue, handler: @escaping (Result<T.Response>) -> Void)
+    func send<T: Request>(_ request: T, queue: DispatchQueue, handler: @escaping (Result<T.Response>) -> Void)
+    func send<T: Request>(_ request: T) -> Result<T.Response>
 }
 
 protocol RequestBuilder {
-    func build<T: Request>(_ req: T) -> URLRequest?
+    func build<T: Request>(_ request: T) -> URLRequest?
 }
 
 extension RequestBuilder {
@@ -118,6 +119,9 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
     func send<T: Request>(_ request: T, queue: DispatchQueue = DispatchQueue.main, handler: @escaping (Result<T.Response>) -> Void) {
 
         guard let request = build(request) else {
+            queue.async {
+                handler(.failure(BlessingError(code: 1001, description: "Can't build URLRequest.")))
+            }
             return
         }
 
@@ -145,6 +149,42 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
         }
         
         task.resume()
+    }
+
+    func send<T: Request>(_ request: T) -> Result<T.Response> {
+
+        guard let urlRequest = build(request) else {
+            return .failure(BlessingError(code: 1001, description: "Can't build URLRequest."))
+        }
+
+        let (data, response, error) = URLSession.shared.sync(with: urlRequest)
+
+        if let data = data, let result = T.Response.parse(data: data) {
+            return .success(result)
+        } else if let error = error {
+            return .failure(error)
+        } else if let response = response as? HTTPURLResponse {
+            return .failure(BlessingError(code: response.statusCode, description: "URLSession Error"))
+        } else {
+            return .failure(BlessingError.default)
+        }
+    }
+}
+
+extension URLSession {
+
+    func sync(with request: URLRequest) -> (Data?, URLResponse?, Error?) {
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: (Data?, URLResponse?, Error?) = (nil, nil, nil)
+
+        dataTask(with: request) { data, response, error in
+            result = (data, response, error)
+            semaphore.signal()
+        }.resume()
+
+        semaphore.wait()
+
+        return result
     }
 }
 

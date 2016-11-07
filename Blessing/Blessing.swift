@@ -99,7 +99,7 @@ public class Blessing {
     private var host: String = ""
     private var server: Server = .dnspod
 
-    public func query(_ host: String, on server: Server = .dnspod, handler: ((Result<Record>) -> Void)? = nil) {
+    public func query(_ host: String, on server: Server = .dnspod, queue: DispatchQueue = .main, handler: ((Result<Record>) -> Void)? = nil) {
 
         self.host = host
         self.server = server
@@ -113,7 +113,7 @@ public class Blessing {
 
         switch server {
         case .dnspod:
-            URLSessionRequestSender.shared.send(DnspodRequest(domain: host)) { (result: Result<Dnspod>) in
+            URLSessionRequestSender.shared.send(DnspodRequest(domain: host), queue: queue) { (result: Result<Dnspod>) in
                 let record = result.map { $0.toRecord() }
                 handler?(record)
                 if let value = record.value {
@@ -121,7 +121,7 @@ public class Blessing {
                 }
             }
         case .aliyun(let account):
-            URLSessionRequestSender.shared.send(AliyunRequest(domain: host, account: account)) { (result: Result<Aliyun>) in
+            URLSessionRequestSender.shared.send(AliyunRequest(domain: host, account: account), queue: queue) { (result: Result<Aliyun>) in
               let record = result.map { $0.toRecord() }
                 handler?(record)
                 if let value = record.value {
@@ -129,6 +129,34 @@ public class Blessing {
                 } 
             }
         }
+    }
+
+    public func query(_ host: String, on server: Server = .dnspod) -> Result<Record> {
+
+        self.host = host
+        self.server = server
+
+        // cache
+        if let record = cache.get(for: host) {
+            return .success(record)
+        }
+
+        let record: Result<Record>
+
+        switch server {
+        case .dnspod:
+            let result = URLSessionRequestSender.shared.send(DnspodRequest(domain: host))
+            record = result.map { $0.toRecord() }
+        case .aliyun(let account):
+            let result = URLSessionRequestSender.shared.send(AliyunRequest(domain: host, account: account))
+            record = result.map { $0.toRecord() }
+        }
+
+        if let value = record.value {
+            self.cache.set(value, for: host)
+        }
+        
+        return record
     }
 
     private func bindListener() {

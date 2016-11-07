@@ -17,6 +17,11 @@
 		FA0BC1081DCB337200AD8030 /* Blessing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FADB14771DC9FCE900948AEC /* Blessing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FA0BC10D1DCB49BD00AD8030 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0BC10C1DCB49BD00AD8030 /* Request.swift */; };
 		FA0BC10F1DCC542D00AD8030 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0BC10E1DCC542D00AD8030 /* Reachability.swift */; };
+		FA0BC1121DD02E6D00AD8030 /* Blessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB14911DC9FD1C00948AEC /* Blessing.swift */; };
+		FA0BC1131DD02FED00AD8030 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0BC10E1DCC542D00AD8030 /* Reachability.swift */; };
+		FA0BC1141DD02FF600AD8030 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB14931DC9FD2C00948AEC /* Cache.swift */; };
+		FA0BC1151DD02FFA00AD8030 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0BC10C1DCB49BD00AD8030 /* Request.swift */; };
+		FA0BC1161DD02FFE00AD8030 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4BDE321DCAFA5700F81A03 /* Server.swift */; };
 		FA4BDE331DCAFA5700F81A03 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4BDE321DCAFA5700F81A03 /* Server.swift */; };
 		FADB14811DC9FCEA00948AEC /* Blessing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FADB14771DC9FCE900948AEC /* Blessing.framework */; };
 		FADB14861DC9FCEA00948AEC /* BlessingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB14851DC9FCEA00948AEC /* BlessingTests.swift */; };
@@ -395,7 +400,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA0BC1121DD02E6D00AD8030 /* Blessing.swift in Sources */,
 				FADB14861DC9FCEA00948AEC /* BlessingTests.swift in Sources */,
+				FA0BC1151DD02FFA00AD8030 /* Request.swift in Sources */,
+				FA0BC1141DD02FF600AD8030 /* Cache.swift in Sources */,
+				FA0BC1161DD02FFE00AD8030 /* Server.swift in Sources */,
+				FA0BC1131DD02FED00AD8030 /* Reachability.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -667,6 +677,7 @@
 				FA0BC1021DCB334B00AD8030 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		FA0BC1061DCB334B00AD8030 /* Build configuration list for PBXNativeTarget "HappyTests" */ = {
 			isa = XCConfigurationList;
@@ -675,6 +686,7 @@
 				FA0BC1041DCB334B00AD8030 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		FADB14711DC9FCE900948AEC /* Build configuration list for PBXProject "Blessing" */ = {
 			isa = XCConfigurationList;
