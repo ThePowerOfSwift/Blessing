@@ -152,7 +152,7 @@ public class Blessing {
         }
     }
 
-    public func query(_ host: String, on server: Server = .dnspod) -> Result<Record> {
+    public func query(_ host: String, on server: Server = .qcloud) -> Result<Record> {
 
         self.host = host
         self.server = server
