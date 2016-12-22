@@ -8,9 +8,18 @@
 
 import Foundation
 
-public enum Server {
+public enum Server: CustomStringConvertible {
     case dnspod
+    case qcloud
     case aliyun(account: String)
+
+    public var description: String {
+        switch self {
+        case .qcloud: return "QCloud"
+        case .dnspod: return "DNSPod"
+        case .aliyun: return "AliYun"
+        }
+    }
 }
 
 public enum Result<T> {
@@ -92,28 +101,40 @@ public class Blessing {
         bindListener()
     }
 
+    public var debug: Bool = false
+    
     private let cache: Cache<Record> = Cache()
 
     private let manager: NetworkReachabilityManager?
 
     private var host: String = ""
-    private var server: Server = .dnspod
+    private var server: Server = .qcloud
 
-    public func query(_ host: String, on server: Server = .dnspod, queue: DispatchQueue = .main, handler: ((Result<Record>) -> Void)? = nil) {
+    public func query(_ host: String, on server: Server = .qcloud, queue: DispatchQueue = .main, handler: ((Result<Record>) -> Void)? = nil) {
 
         self.host = host
         self.server = server
 
         // cache
         if let record = cache.get(for: host) {
+            if debug {
+                print("**Blessing**: Async query \(host) on \(server), record from cache.")
+            }
             handler?(.success(record))
-            print("cached")
             return
         }
 
         switch server {
         case .dnspod:
             URLSessionRequestSender.shared.send(DnspodRequest(domain: host), queue: queue) { (result: Result<Dnspod>) in
+                let record = result.map { $0.toRecord() }
+                handler?(record)
+                if let value = record.value {
+                    self.cache.set(value, for: host)
+                }
+            }
+        case .qcloud:
+            URLSessionRequestSender.shared.send(QcloudRequest(domain: host), queue: queue) { (result: Result<Qcloud>) in
                 let record = result.map { $0.toRecord() }
                 handler?(record)
                 if let value = record.value {
@@ -138,6 +159,9 @@ public class Blessing {
 
         // cache
         if let record = cache.get(for: host) {
+            if debug {
+                print("**Blessing**: Sync query \(host) on \(server), record from cache.")
+            }
             return .success(record)
         }
 
@@ -146,6 +170,9 @@ public class Blessing {
         switch server {
         case .dnspod:
             let result = URLSessionRequestSender.shared.send(DnspodRequest(domain: host))
+            record = result.map { $0.toRecord() }
+        case .qcloud:
+            let result = URLSessionRequestSender.shared.send(QcloudRequest(domain: host))
             record = result.map { $0.toRecord() }
         case .aliyun(let account):
             let result = URLSessionRequestSender.shared.send(AliyunRequest(domain: host, account: account))
@@ -167,9 +194,18 @@ public class Blessing {
             
             switch status {
             case .notReachable:
+                if sSelf.debug {
+                    print("**Blessing**: Network not reachable.")
+                }
                 return
-            default:
-                break
+            case .unknown:
+                if sSelf.debug {
+                    print("**Blessing**: Unknown network.")
+                }
+            case .reachable(let type):
+                if sSelf.debug {
+                    print("**Blessing**: Connected with \(type).")
+                }
             }
 
             sSelf.cache.clean()
