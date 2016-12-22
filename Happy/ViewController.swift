@@ -15,6 +15,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
+        Blessing.shared.debug = true
 
         Blessing.shared.query("apple.com") { result in
             switch result {
@@ -30,15 +31,7 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        Blessing.shared.query("apple.com") { result in
-            switch result {
-            case .success(let record):
-                print(record)
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-
+        print(Blessing.shared.query("apple.com", on: .qcloud))
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -52,7 +45,6 @@ class ViewController: UIViewController {
                 print(error.localizedDescription)
             }
         }
-
     }
 
     override func didReceiveMemoryWarning() {
