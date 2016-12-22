@@ -22,6 +22,7 @@
 		FA0BC1141DD02FF600AD8030 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB14931DC9FD2C00948AEC /* Cache.swift */; };
 		FA0BC1151DD02FFA00AD8030 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0BC10C1DCB49BD00AD8030 /* Request.swift */; };
 		FA0BC1161DD02FFE00AD8030 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4BDE321DCAFA5700F81A03 /* Server.swift */; };
+		FA3A7F581E0A941500937AD4 /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3A7F571E0A941500937AD4 /* SessionDelegate.swift */; };
 		FA4BDE331DCAFA5700F81A03 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4BDE321DCAFA5700F81A03 /* Server.swift */; };
 		FADB14811DC9FCEA00948AEC /* Blessing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FADB14771DC9FCE900948AEC /* Blessing.framework */; };
 		FADB14861DC9FCEA00948AEC /* BlessingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB14851DC9FCEA00948AEC /* BlessingTests.swift */; };
@@ -81,6 +82,7 @@
 		FA0BC1001DCB334B00AD8030 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA0BC10C1DCB49BD00AD8030 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		FA0BC10E1DCC542D00AD8030 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		FA3A7F571E0A941500937AD4 /* SessionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionDelegate.swift; sourceTree = "<group>"; };
 		FA4BDE321DCAFA5700F81A03 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		FADB14771DC9FCE900948AEC /* Blessing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Blessing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FADB147A1DC9FCE900948AEC /* Blessing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Blessing.h; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 				FADB14911DC9FD1C00948AEC /* Blessing.swift */,
 				FA4BDE321DCAFA5700F81A03 /* Server.swift */,
 				FA0BC10C1DCB49BD00AD8030 /* Request.swift */,
+				FA3A7F571E0A941500937AD4 /* SessionDelegate.swift */,
 				FADB14931DC9FD2C00948AEC /* Cache.swift */,
 				FA0BC10E1DCC542D00AD8030 /* Reachability.swift */,
 			);
@@ -391,6 +394,7 @@
 				FADB14941DC9FD2C00948AEC /* Cache.swift in Sources */,
 				FA0BC10D1DCB49BD00AD8030 /* Request.swift in Sources */,
 				FA4BDE331DCAFA5700F81A03 /* Server.swift in Sources */,
+				FA3A7F581E0A941500937AD4 /* SessionDelegate.swift in Sources */,
 				FA0BC10F1DCC542D00AD8030 /* Reachability.swift in Sources */,
 				FADB14921DC9FD1C00948AEC /* Blessing.swift in Sources */,
 			);
