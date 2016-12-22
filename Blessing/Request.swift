@@ -27,6 +27,7 @@ extension BlessingError: CustomDebugStringConvertible {
 
 protocol Request {
     var host: String { get }
+    var dns: String? { get }
     var method: String { get }
     var path: String { get }
     var parameters: [String: Any] { get }
@@ -121,20 +122,33 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
 
     static let shared = URLSessionRequestSender()
 
-    private init() {}
+    let session: URLSession
+    let delegate: SessionDelegate
+    let queue = DispatchQueue(label: "com.xspyhack.blessing.session" + UUID().uuidString)
+
+    private init() {
+        let delegate = SessionDelegate()
+        self.delegate = delegate
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 30.0
+
+        self.session =  URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+    }
 
     func send<T: Request>(_ request: T, queue: DispatchQueue = DispatchQueue.main, handler: @escaping (Result<T.Response>) -> Void) {
 
-        guard let request = build(request) else {
+        guard let urlRequest = build(request) else {
             queue.async {
                 handler(.failure(BlessingError(code: 1001, description: "Can't build URLRequest.")))
             }
             return
         }
 
-        URLSession.shared.configuration.timeoutIntervalForRequest = 30.0
+        if let dns = request.dns {
+            session.configuration.httpAdditionalHeaders = ["Host": dns]
+        }
 
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        let task = session.dataTask(with: urlRequest) { data, response, error in
 
             if let data = data, let result = T.Response.parse(data: data) {
                 queue.async {
@@ -164,7 +178,11 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
             return .failure(BlessingError(code: 1001, description: "Can't build URLRequest."))
         }
 
-        let (data, response, error) = URLSession.shared.sync(with: urlRequest)
+        if let dns = request.dns {
+            session.configuration.httpAdditionalHeaders = ["Host": dns]
+        }
+
+        let (data, response, error) = session.sync(with: urlRequest)
 
         if let data = data, let result = T.Response.parse(data: data) {
             return .success(result)
