@@ -59,9 +59,16 @@ open class NetworkReachabilityManager {
     ///
     /// - ethernetOrWiFi: The connection type is either over Ethernet or WiFi.
     /// - wwan:           The connection type is a WWAN connection.
-    public enum ConnectionType {
+    public enum ConnectionType: CustomStringConvertible {
         case ethernetOrWiFi
         case wwan
+
+        public var description: String {
+            switch self {
+            case .ethernetOrWiFi: return "Ethernet or WiFi"
+            case .wwan: return "WWAN"
+            }
+        }
     }
 
     /// A closure executed when the network reachability status changes. The closure takes a single argument: the
