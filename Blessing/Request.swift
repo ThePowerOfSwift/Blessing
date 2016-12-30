@@ -29,6 +29,7 @@ protocol Request {
     var host: String { get }
     var dns: String? { get }
     var method: String { get }
+    var headers: HTTPHeaders? { get }
     var path: String { get }
     var parameters: [String: Any] { get }
 
@@ -58,6 +59,12 @@ extension RequestBuilder {
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.method
+
+        if let headers = request.headers {
+            for (headerField, headerValue) in headers {
+                urlRequest.setValue(headerValue, forHTTPHeaderField: headerField)
+            }
+        }
 
         if var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false), !request.parameters.isEmpty {
 
@@ -118,6 +125,9 @@ extension RequestBuilder {
 
 }
 
+/// A dictionary of headers to apply to a `URLRequest`.
+public typealias HTTPHeaders = [String: String]
+
 struct URLSessionRequestSender: RequestSender, RequestBuilder {
 
     static let shared = URLSessionRequestSender()
@@ -131,9 +141,76 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
         self.delegate = delegate
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30.0
+        configuration.httpAdditionalHeaders = URLSessionRequestSender.defaultHTTPHeaders
 
         self.session =  URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
     }
+
+    /// Creates default values for the "Accept-Encoding", "Accept-Language" and "User-Agent" headers.
+    /// see https://github.com/alamofire/alamofire
+    public static let defaultHTTPHeaders: HTTPHeaders = {
+        // Accept-Encoding HTTP Header; see https://tools.ietf.org/html/rfc7230#section-4.2.3
+        let acceptEncoding: String = "gzip;q=1.0, compress;q=0.5"
+
+        // Accept-Language HTTP Header; see https://tools.ietf.org/html/rfc7231#section-5.3.5
+        let acceptLanguage = Locale.preferredLanguages.prefix(6).enumerated().map { index, languageCode in
+            let quality = 1.0 - (Double(index) * 0.1)
+            return "\(languageCode);q=\(quality)"
+        }.joined(separator: ", ")
+
+        // User-Agent Header; see https://tools.ietf.org/html/rfc7231#section-5.5.3
+        // Example: `iOS Example/1.0 (org.alamofire.iOS-Example; build:1; iOS 10.0.0) Alamofire/4.0.0`
+        let userAgent: String = {
+            if let info = Bundle.main.infoDictionary {
+                let executable = info[kCFBundleExecutableKey as String] as? String ?? "Unknown"
+                let bundle = info[kCFBundleIdentifierKey as String] as? String ?? "Unknown"
+                let appVersion = info["CFBundleShortVersionString"] as? String ?? "Unknown"
+                let appBuild = info[kCFBundleVersionKey as String] as? String ?? "Unknown"
+
+                let osNameVersion: String = {
+                    let version = ProcessInfo.processInfo.operatingSystemVersion
+                    let versionString = "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
+
+                    let osName: String = {
+                        #if os(iOS)
+                            return "iOS"
+                        #elseif os(watchOS)
+                            return "watchOS"
+                        #elseif os(tvOS)
+                            return "tvOS"
+                        #elseif os(macOS)
+                            return "OS X"
+                        #elseif os(Linux)
+                            return "Linux"
+                        #else
+                            return "Unknown"
+                        #endif
+                    }()
+
+                    return "\(osName) \(versionString)"
+                }()
+
+                let blessingVersion: String = {
+                    guard
+                        let afInfo = Bundle(for: Blessing.self).infoDictionary,
+                        let build = afInfo["CFBundleShortVersionString"]
+                        else { return "Unknown" }
+
+                    return "Blessing/\(build)"
+                }()
+
+                return "\(executable)/\(appVersion) (\(bundle); build:\(appBuild); \(osNameVersion)) \(blessingVersion)"
+            }
+
+            return "Blessing"
+        }()
+
+        return [
+            "Accept-Encoding": acceptEncoding,
+            "Accept-Language": acceptLanguage,
+            "User-Agent": userAgent,
+        ]
+    }()
 
     func send<T: Request>(_ request: T, queue: DispatchQueue = DispatchQueue.main, handler: @escaping (Result<T.Response>) -> Void) {
 
@@ -142,10 +219,6 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
                 handler(.failure(BlessingError(code: 1001, description: "Can't build URLRequest.")))
             }
             return
-        }
-
-        if let dns = request.dns {
-            session.configuration.httpAdditionalHeaders = ["Host": dns]
         }
 
         let task = session.dataTask(with: urlRequest) { data, response, error in
@@ -176,10 +249,6 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
 
         guard let urlRequest = build(request) else {
             return .failure(BlessingError(code: 1001, description: "Can't build URLRequest."))
-        }
-
-        if let dns = request.dns {
-            session.configuration.httpAdditionalHeaders = ["Host": dns]
         }
 
         let (data, response, error) = session.sync(with: urlRequest)

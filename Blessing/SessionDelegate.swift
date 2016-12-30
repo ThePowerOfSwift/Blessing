@@ -51,7 +51,7 @@ extension SessionDelegate: URLSessionTaskDelegate {
         var credential: URLCredential?
 
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
-            let host = (session.configuration.httpAdditionalHeaders?["Host"] as? String) ?? challenge.protectionSpace.host
+            let host = task.currentRequest?.allHTTPHeaderFields?["Host"] ?? challenge.protectionSpace.host
 
             if let serverTrust = challenge.protectionSpace.serverTrust {
                 if evaluate(serverTrust, forHost: host) {

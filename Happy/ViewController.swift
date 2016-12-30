@@ -25,7 +25,9 @@ class ViewController: UIViewController {
                 print(error.localizedDescription)
             }
         }
-        
+
+        print(Blessing.shared.query("apple.com", on: .qcloud))
+
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -45,6 +47,8 @@ class ViewController: UIViewController {
                 print(error.localizedDescription)
             }
         }
+
+        print(Blessing.shared.query("apple.com", on: .qcloud).value?.ips)
     }
 
     override func didReceiveMemoryWarning() {

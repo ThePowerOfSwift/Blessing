@@ -85,6 +85,7 @@ struct QcloudRequest: Request {
 
     let host: String = "https://182.254.12.34"
     let dns: String? = "dns.qq.com"
+    let headers: HTTPHeaders?
     let path: String = "/d"
     let method: String = "GET"
 
@@ -92,6 +93,7 @@ struct QcloudRequest: Request {
     
     init(domain: String) {
         self.parameters =  ["dn": domain, "ttl": "1"]
+        self.headers = ["Host": "dns.qq.com"]
     }
 }
 
@@ -147,6 +149,7 @@ struct DnspodRequest: Request {
     let host: String = "https://119.29.29.229"
     let path: String = "/d"
     let method: String = "GET"
+    let headers: HTTPHeaders? = nil
     let dns: String? = nil
 
     var parameters: [String : Any]
@@ -208,6 +211,7 @@ struct AliyunRequest: Request {
     let host: String = "http://203.107.1.1/"
     let dns: String? = nil
     let path: String
+    let headers: HTTPHeaders? = nil
     let method: String = "GET"
 
     var parameters: [String : Any]
