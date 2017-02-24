@@ -110,15 +110,18 @@ public class Blessing {
     private var host: String = ""
     private var server: Server = .qcloud
 
+    /// Async query
     public func query(_ host: String, on server: Server = .qcloud, queue: DispatchQueue = .main, handler: ((Result<Record>) -> Void)? = nil) {
 
         self.host = host
         self.server = server
 
+        let isDebug = debug
+
         // cache
         if let record = cache.get(for: host) {
-            if debug {
-                print("**Blessing**: Async query \(host) on \(server), record from cache.")
+            if isDebug {
+                print("**Blessing**: Async query `\(host)` on \(server), record from cache.")
             }
             handler?(.success(record))
             return
@@ -126,32 +129,45 @@ public class Blessing {
 
         switch server {
         case .dnspod:
-            URLSessionRequestSender.shared.send(DnspodRequest(domain: host), queue: queue) { (result: Result<Dnspod>) in
+            URLSessionRequestSender.shared.send(DnspodRequest(domain: host), queue: queue) { [weak self] (result: Result<Dnspod>) in
                 let record = result.map { $0.toRecord() }
                 handler?(record)
                 if let value = record.value {
-                    self.cache.set(value, for: host)
+                    self?.cache.set(value, for: host)
+                }
+                if isDebug {
+                    print("**Blessing**: Async query `\(host)` on \(server), record from server.")
+                    print("**Blessing**: \(record.value)")
                 }
             }
         case .qcloud:
-            URLSessionRequestSender.shared.send(QcloudRequest(domain: host), queue: queue) { (result: Result<Qcloud>) in
+            URLSessionRequestSender.shared.send(QcloudRequest(domain: host), queue: queue) { [weak self] (result: Result<Qcloud>) in
                 let record = result.map { $0.toRecord() }
                 handler?(record)
                 if let value = record.value {
-                    self.cache.set(value, for: host)
+                    self?.cache.set(value, for: host)
+                }
+                if isDebug {
+                    print("**Blessing**: Async query `\(host)` on \(server), record from server.")
+                    print("**Blessing**: \(record.value)")
                 }
             }
         case .aliyun(let account):
-            URLSessionRequestSender.shared.send(AliyunRequest(domain: host, account: account), queue: queue) { (result: Result<Aliyun>) in
+            URLSessionRequestSender.shared.send(AliyunRequest(domain: host, account: account), queue: queue) { [weak self] (result: Result<Aliyun>) in
               let record = result.map { $0.toRecord() }
                 handler?(record)
                 if let value = record.value {
-                    self.cache.set(value, for: host)
-                } 
+                    self?.cache.set(value, for: host)
+                }
+                if isDebug {
+                    print("**Blessing**: Async query `\(host)` on \(server), record from server.")
+                    print("**Blessing**: \(record.value)")
+                }
             }
         }
     }
 
+    /// Sync query
     public func query(_ host: String, on server: Server = .qcloud) -> Result<Record> {
 
         self.host = host
@@ -160,7 +176,7 @@ public class Blessing {
         // cache
         if let record = cache.get(for: host) {
             if debug {
-                print("**Blessing**: Sync query \(host) on \(server), record from cache.")
+                print("**Blessing**: Sync query `\(host)` on \(server), record from cache.")
             }
             return .success(record)
         }
@@ -181,6 +197,8 @@ public class Blessing {
 
         if let value = record.value {
             self.cache.set(value, for: host)
+            print("**Blessing**: Sync query `\(host)` on \(server), record from server.")
+            print("**Blessing**: \(value)")
         }
         
         return record
