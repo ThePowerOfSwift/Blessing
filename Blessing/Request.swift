@@ -34,11 +34,17 @@ protocol Request {
     var parameters: [String: Any] { get }
 
     associatedtype Response: Decodable
+
+    func transform(_ response: String) -> String
 }
 
 extension Request {
     var parameters: [String: Any] {
         return [:]
+    }
+
+    func transform(_ response: String) -> String {
+        return response
     }
 }
 
@@ -223,7 +229,7 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
 
         let task = session.dataTask(with: urlRequest) { data, response, error in
 
-            if let data = data, let result = T.Response.parse(data: data) {
+            if let data = data, let result = T.Response.parse(data: data, transform: request.transform) {
                 queue.async {
                     handler(.success(result))
                 }
@@ -253,7 +259,7 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
 
         let (data, response, error) = session.sync(with: urlRequest)
 
-        if let data = data, let result = T.Response.parse(data: data) {
+        if let data = data, let result = T.Response.parse(data: data, transform: request.transform) {
             return .success(result)
         } else if let error = error {
             return .failure(error)

@@ -10,7 +10,7 @@ import Foundation
 
 public enum Server: CustomStringConvertible {
     case dnspod
-    case qcloud
+    case qcloud(id: Int, key: String) // id, key
     case aliyun(account: String)
 
     public var description: String {
@@ -48,7 +48,6 @@ public enum Result<T> {
 extension Result {
 
     public func map<U>(_ transform: (T) -> U) -> Result<U> {
-
         switch self {
         case .success(let value):
             return .success(transform(value))
@@ -58,7 +57,6 @@ extension Result {
     }
 
     public func flatMap<U>(_ transform: (T) -> Result<U>) -> Result<U> {
-
         switch self {
         case .success(let value):
             return transform(value)
@@ -78,7 +76,6 @@ protocol RecordType {
 }
 
 extension RecordType {
-
     var isExpired: Bool {
         return Date().timeIntervalSince1970 > (timestamp + Double(ttl))
     }
@@ -108,10 +105,10 @@ public class Blessing {
     private let manager: NetworkReachabilityManager?
 
     private var host: String = ""
-    private var server: Server = .qcloud
+    private var server: Server = .dnspod
 
     /// Async query
-    public func query(_ host: String, on server: Server = .qcloud, queue: DispatchQueue = .main, handler: ((Result<Record>) -> Void)? = nil) {
+    public func query(_ host: String, on server: Server = .dnspod, queue: DispatchQueue = .main, handler: ((Result<Record>) -> Void)? = nil) {
 
         self.host = host
         self.server = server
@@ -140,8 +137,8 @@ public class Blessing {
                     print("**Blessing**: \(record.value)")
                 }
             }
-        case .qcloud:
-            URLSessionRequestSender.shared.send(QcloudRequest(domain: host), queue: queue) { [weak self] (result: Result<Qcloud>) in
+        case let .qcloud(id, key):
+            URLSessionRequestSender.shared.send(QcloudRequest(domain: host, id: id, key: key), queue: queue) { [weak self] (result: Result<Qcloud>) in
                 let record = result.map { $0.toRecord() }
                 handler?(record)
                 if let value = record.value {
@@ -168,7 +165,7 @@ public class Blessing {
     }
 
     /// Sync query
-    public func query(_ host: String, on server: Server = .qcloud) -> Result<Record> {
+    public func query(_ host: String, on server: Server = .dnspod) -> Result<Record> {
 
         self.host = host
         self.server = server
@@ -187,8 +184,8 @@ public class Blessing {
         case .dnspod:
             let result = URLSessionRequestSender.shared.send(DnspodRequest(domain: host))
             record = result.map { $0.toRecord() }
-        case .qcloud:
-            let result = URLSessionRequestSender.shared.send(QcloudRequest(domain: host))
+        case let .qcloud(id, key):
+            let result = URLSessionRequestSender.shared.send(QcloudRequest(domain: host, id: id, key: key))
             record = result.map { $0.toRecord() }
         case .aliyun(let account):
             let result = URLSessionRequestSender.shared.send(AliyunRequest(domain: host, account: account))

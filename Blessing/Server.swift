@@ -31,14 +31,12 @@ extension Record {
 }
 
 protocol Decodable {
-
-    static func parse(data: Data) -> Self?
+    static func parse(data: Data, transform: ((String) -> String)?) -> Self?
 }
 
 // MAKR: - Qcloud
 
 struct Qcloud {
-
     let ips: [String]
     let ttl: Int
 
@@ -50,12 +48,11 @@ struct Qcloud {
 }
 
 extension Qcloud {
+    init?(data: Data, transform: ((String) -> String)?) {
 
-    init?(data: Data) {
+        guard let raw = String(data: data, encoding: .utf8), let result = transform?(raw) else { return nil }
 
-        guard let raw = String(data: data, encoding: .utf8) else { return nil }
-
-        let components = raw.components(separatedBy: ",")
+        let components = result.components(separatedBy: ",")
 
         if components.count != 2 {
             return nil
@@ -66,17 +63,14 @@ extension Qcloud {
         guard let ips = components.first?.components(separatedBy: ";"), !ips.isEmpty else { return nil }
 
         self.ips = ips
-
         self.ttl = ttl
-
         self.timestamp = Date().timeIntervalSince1970
     }
 }
 
 extension Qcloud: Decodable {
-    static func parse(data: Data) -> Qcloud? {
-
-        return Qcloud(data: data)
+    static func parse(data: Data, transform: ((String) -> String)?) -> Qcloud? {
+        return Qcloud(data: data, transform: transform)
     }
 }
 
@@ -88,12 +82,19 @@ struct QcloudRequest: Request {
     let headers: HTTPHeaders?
     let path: String = "/d"
     let method: String = "GET"
+    let key: String
 
     var parameters: [String : Any]
     
-    init(domain: String) {
-        self.parameters =  ["dn": domain, "ttl": "1"]
+    init(domain: String, id: Int, key: String) {
+        let cipher = encrypt(domain, key: key)
+        self.parameters =  ["dn": cipher ?? domain, "id": id, "ttl": "1"]
         self.headers = ["Host": "dns.qq.com"]
+        self.key = key
+    }
+
+    func transform(_ response: String) -> String {
+        return decrypt(response, key: key) ?? response
     }
 }
 
@@ -101,7 +102,6 @@ struct QcloudRequest: Request {
 // MAKR: - Dnspod
 
 struct Dnspod {
-
     let ips: [String]
     let ttl: Int
 
@@ -113,7 +113,6 @@ struct Dnspod {
 }
 
 extension Dnspod {
-
     init?(data: Data) {
 
         guard let raw = String(data: data, encoding: .utf8) else { return nil }
@@ -137,8 +136,7 @@ extension Dnspod {
 }
 
 extension Dnspod: Decodable {
-    static func parse(data: Data) -> Dnspod? {
-
+    static func parse(data: Data, transform: ((String) -> String)? = nil) -> Dnspod? {
         return Dnspod(data: data)
     }
 }
@@ -146,7 +144,7 @@ extension Dnspod: Decodable {
 struct DnspodRequest: Request {
     typealias Response = Dnspod
 
-    let host: String = "https://119.29.29.229"
+    let host: String = "http://119.29.29.29"
     let path: String = "/d"
     let method: String = "GET"
     let headers: HTTPHeaders? = nil
@@ -162,7 +160,6 @@ struct DnspodRequest: Request {
 // MARK: - Aliyum
 
 struct Aliyun {
-
     let host: String
     let ips: [String]
     let ttl: Int
@@ -174,7 +171,6 @@ struct Aliyun {
 }
 
 extension Aliyun {
-
     init?(data: Data) {
 
         guard let json = try? JSONSerialization.jsonObject(with: data, options: [.allowFragments]) as? [String: Any] else {
@@ -199,8 +195,7 @@ extension Aliyun {
 
 
 extension Aliyun: Decodable {
-
-    static func parse(data: Data) -> Aliyun? {
+    static func parse(data: Data, transform: ((String) -> String)? = nil) -> Aliyun? {
         return Aliyun(data: data)
     }
 }
