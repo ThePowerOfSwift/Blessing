@@ -56,7 +56,6 @@ class BlessingTests: XCTestCase {
         }
 
         waitForExpectations(timeout: 30.0, handler: nil)
-
     }
 
     func testAliyun() {
@@ -64,6 +63,27 @@ class BlessingTests: XCTestCase {
         let res = Blessing.shared.query("www.aliyun.com", on: .aliyun(account: "139450"))
 
         XCTAssertNotNil(res.value, res.error!.localizedDescription)
+    }
+
+    func testQcloud() {
+        let host = "www.google.com"
+        let id = 888
+        let key = "3nRsFfEh"
+
+        let res = Blessing.shared.query(host, on: .qcloud(id: id, key: key))
+
+        XCTAssertNotNil(res.value, res.error!.localizedDescription)
+    }
+
+    func testCrypt() {
+
+        let host = "www.google.com"
+        let key = "blessing"
+        let cipher = "cffa53293e02f0fae969df52bde97a68"
+
+        XCTAssertEqual(encrypt(host, key: key)?.lowercased(), cipher)
+
+        XCTAssertEqual(decrypt(cipher, key: key), host)
     }
 
 }
