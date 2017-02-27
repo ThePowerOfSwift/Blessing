@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA06A3111E640631006E1077 /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3A7F571E0A941500937AD4 /* SessionDelegate.swift */; };
+		FA06A3121E640634006E1077 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEB89711E63F66A00948885 /* Crypto.swift */; };
 		FA0BC0EA1DCB334B00AD8030 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0BC0E91DCB334B00AD8030 /* AppDelegate.swift */; };
 		FA0BC0EC1DCB334B00AD8030 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0BC0EB1DCB334B00AD8030 /* ViewController.swift */; };
 		FA0BC0EF1DCB334B00AD8030 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA0BC0ED1DCB334B00AD8030 /* Main.storyboard */; };
@@ -29,6 +31,7 @@
 		FADB14881DC9FCEA00948AEC /* Blessing.h in Headers */ = {isa = PBXBuildFile; fileRef = FADB147A1DC9FCE900948AEC /* Blessing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FADB14921DC9FD1C00948AEC /* Blessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB14911DC9FD1C00948AEC /* Blessing.swift */; };
 		FADB14941DC9FD2C00948AEC /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB14931DC9FD2C00948AEC /* Cache.swift */; };
+		FAEB89721E63F66A00948885 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEB89711E63F66A00948885 /* Crypto.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +95,7 @@
 		FADB14871DC9FCEA00948AEC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FADB14911DC9FD1C00948AEC /* Blessing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Blessing.swift; sourceTree = "<group>"; };
 		FADB14931DC9FD2C00948AEC /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
+		FAEB89711E63F66A00948885 /* Crypto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Crypto.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,6 +185,7 @@
 				FA4BDE321DCAFA5700F81A03 /* Server.swift */,
 				FA0BC10C1DCB49BD00AD8030 /* Request.swift */,
 				FA3A7F571E0A941500937AD4 /* SessionDelegate.swift */,
+				FAEB89711E63F66A00948885 /* Crypto.swift */,
 				FADB14931DC9FD2C00948AEC /* Cache.swift */,
 				FA0BC10E1DCC542D00AD8030 /* Reachability.swift */,
 			);
@@ -396,6 +401,7 @@
 				FA4BDE331DCAFA5700F81A03 /* Server.swift in Sources */,
 				FA3A7F581E0A941500937AD4 /* SessionDelegate.swift in Sources */,
 				FA0BC10F1DCC542D00AD8030 /* Reachability.swift in Sources */,
+				FAEB89721E63F66A00948885 /* Crypto.swift in Sources */,
 				FADB14921DC9FD1C00948AEC /* Blessing.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -404,12 +410,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA06A3121E640634006E1077 /* Crypto.swift in Sources */,
 				FA0BC1121DD02E6D00AD8030 /* Blessing.swift in Sources */,
 				FADB14861DC9FCEA00948AEC /* BlessingTests.swift in Sources */,
 				FA0BC1151DD02FFA00AD8030 /* Request.swift in Sources */,
 				FA0BC1141DD02FF600AD8030 /* Cache.swift in Sources */,
 				FA0BC1161DD02FFE00AD8030 /* Server.swift in Sources */,
 				FA0BC1131DD02FED00AD8030 /* Reachability.swift in Sources */,
+				FA06A3111E640631006E1077 /* SessionDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -623,6 +631,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.egg.Blessing;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "${SRCROOT}/CocoaPods/iphoneos";
+				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "${SRCROOT}/CocoaPods/iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
@@ -643,6 +653,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.egg.Blessing;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "${SRCROOT}/CocoaPods/iphoneos";
+				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "${SRCROOT}/CocoaPods/iphonesimulator";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
@@ -655,6 +667,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.egg.BlessingTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				"SWIFT_INCLUDE_PATHS[arch=*]" = "${SRCROOT}/CocoaPods/iphonesimulator";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -667,6 +680,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.egg.BlessingTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				"SWIFT_INCLUDE_PATHS[arch=*]" = "${SRCROOT}/CocoaPods/iphonesimulator";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
