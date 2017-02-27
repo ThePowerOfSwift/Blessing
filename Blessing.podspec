@@ -12,4 +12,10 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Blessing/*.swift'
 
+  s.preserve_paths = "CocoaPods/**/*"
+  s.pod_target_xcconfig = {
+      'SWIFT_INCLUDE_PATHS[sdk=iphoneos*]'         => '$(PODS_ROOT)/CocoaPods/iphoneos',
+      'SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]'  => '$(PODS_ROOT)/CocoaPods/iphonesimulator'
+  }
+  
 end
