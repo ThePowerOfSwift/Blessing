@@ -26,14 +26,14 @@ class ViewController: UIViewController {
             }
         }
 
-        print(Blessing.shared.query("apple.com", on: .qcloud))
+        print(Blessing.shared.query("apple.com", on: .qcloud(id: 888, key: "3nRsFfEh")))
 
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        print(Blessing.shared.query("apple.com", on: .qcloud))
+        print(Blessing.shared.query("apple.com", on: .qcloud(id: 888, key: "3nRsFfEh")))
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -48,7 +48,7 @@ class ViewController: UIViewController {
             }
         }
 
-        print(Blessing.shared.query("apple.com", on: .qcloud).value?.ips)
+        print(Blessing.shared.query("apple.com", on: .qcloud(id: 888, key: "3nRsFfEh")).value?.ips)
     }
 
     override func didReceiveMemoryWarning() {
