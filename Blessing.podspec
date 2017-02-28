@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'Blessing'
-  s.version = '0.6.1'
+  s.version = '0.7'
   s.license = { :type => "MIT", :file => "LICENSE"}
   s.summary = 'httpdns'
   s.homepage = 'https://github.com/Xspyhack/Blessing'
