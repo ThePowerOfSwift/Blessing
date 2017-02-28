@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import CommonCrypto
+import XCommonCrypto
 
 public func encrypt(_ text: String, key: String) -> String? {
 
