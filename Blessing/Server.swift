@@ -77,7 +77,7 @@ extension Qcloud: Decodable {
 struct QcloudRequest: Request {
     typealias Response = Qcloud
 
-    let host: String = "https://182.254.12.34"
+    let host: String = "https://119.29.29.229"
     let dns: String? = "dns.qq.com"
     let headers: HTTPHeaders?
     let path: String = "/d"

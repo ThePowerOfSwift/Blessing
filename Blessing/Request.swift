@@ -156,7 +156,7 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
     /// see https://github.com/alamofire/alamofire
     public static let defaultHTTPHeaders: HTTPHeaders = {
         // Accept-Encoding HTTP Header; see https://tools.ietf.org/html/rfc7230#section-4.2.3
-        let acceptEncoding: String = "gzip;q=1.0, compress;q=0.5"
+        let acceptEncoding: String = "gzip;q=1.0, compress;q=0.5, deflate"
 
         // Accept-Language HTTP Header; see https://tools.ietf.org/html/rfc7231#section-5.3.5
         let acceptLanguage = Locale.preferredLanguages.prefix(6).enumerated().map { index, languageCode in
@@ -227,7 +227,15 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
             return
         }
 
+        if Blessing.shared.debug {
+            print(urlRequest)
+        }
+
         let task = session.dataTask(with: urlRequest) { data, response, error in
+
+            if Blessing.shared.debug {
+                print(response!)
+            }
 
             if let data = data, let result = T.Response.parse(data: data, transform: request.transform) {
                 queue.async {
@@ -257,7 +265,15 @@ struct URLSessionRequestSender: RequestSender, RequestBuilder {
             return .failure(BlessingError(code: 1001, description: "Can't build URLRequest."))
         }
 
+        if Blessing.shared.debug {
+            print(urlRequest)
+        }
+
         let (data, response, error) = session.sync(with: urlRequest)
+
+        if Blessing.shared.debug, let response = response {
+            print(response)
+        }
 
         if let data = data, let result = T.Response.parse(data: data, transform: request.transform) {
             return .success(result)

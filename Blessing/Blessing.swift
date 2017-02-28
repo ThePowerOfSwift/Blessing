@@ -224,8 +224,10 @@ public class Blessing {
             }
 
             sSelf.cache.clean()
-            
-            sSelf.query(sSelf.host, on: sSelf.server, handler: nil)
+
+            if !sSelf.host.isEmpty {
+                sSelf.query(sSelf.host, on: sSelf.server, handler: nil)
+            }
         }
 
         manager?.startListening()
