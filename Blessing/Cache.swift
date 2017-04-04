@@ -8,9 +8,13 @@
 
 import Foundation
 
-class Cache<T: RecordType> {
+// Thread unsafe
 
+class Cache<T: RecordType> {
+    
     var caches: [String: T] = [:]
+
+    private var queue = DispatchQueue(label: "com.xspyhack.blessing.cacheQueue", attributes: .concurrent)
 
     func get(for key: String) -> T? {
 
@@ -26,11 +30,23 @@ class Cache<T: RecordType> {
         return record
     }
 
+    /*
     func set(_ value: T, for key: String) {
         if let _ = caches[key] {
             caches.updateValue(value, forKey: key)
         } else {
             caches[key] = value
+        }
+    }
+    */
+    
+    func set(_ value: T, for key: String) {
+        queue.async(flags: .barrier) {
+            if let _ = self.caches[key] {
+                self.caches.updateValue(value, forKey: key)
+            } else {
+                self.caches[key] = value
+            }
         }
     }
 
