@@ -16,6 +16,7 @@ class Cache<T: RecordType> {
 
     private var queue = DispatchQueue(label: "com.xspyhack.blessing.cacheQueue", attributes: .concurrent)
 
+    /*
     func get(for key: String) -> T? {
 
         guard let record = caches[key] else {
@@ -27,6 +28,27 @@ class Cache<T: RecordType> {
             return nil
         }
 
+        return record
+    }
+    */
+    
+    func get(for key: String) -> T? {
+        
+        var result: T? = nil
+        
+        queue.sync {
+            result = caches[key] as? T
+        }
+        
+        guard let record = result else {
+            return nil
+        }
+        
+        if record.isExpired {
+            caches.removeValue(forKey: key)
+            return nil
+        }
+        
         return record
     }
 
